@@ -1,1 +1,5 @@
 C:\Users\Administrator\Desktop\iFLYTEK_demo\iFLYTEK_demo\bin\Debug\iFLYTEK_demo.exe.config
+C:\Users\Administrator\Desktop\iFLYTEK_demo\iFLYTEK_demo\bin\Debug\iFLYTEK_demo.exe
+C:\Users\Administrator\Desktop\iFLYTEK_demo\iFLYTEK_demo\bin\Debug\iFLYTEK_demo.pdb
+C:\Users\Administrator\Desktop\iFLYTEK_demo\iFLYTEK_demo\obj\Debug\iFLYTEK_demo.exe
+C:\Users\Administrator\Desktop\iFLYTEK_demo\iFLYTEK_demo\obj\Debug\iFLYTEK_demo.pdb
