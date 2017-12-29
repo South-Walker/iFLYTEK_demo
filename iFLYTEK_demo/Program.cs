@@ -15,14 +15,15 @@ namespace iFLYTEK_demo
     {
         static void Main(string[] args)
         {
-            ISEServerAgent a = new ISEServerAgent();
-            a.Login("{ your appid }");
-            string senssionid =  a.SessionID;
-            a.TextPut("[content]\r\nIt was two weeks before the Spring Festival and the shopping centre was crowded with shoppers.\r\n");
-            string path = @"C:\Users\Administrator\Desktop\科大讯飞\bin\ise_en\en_sentence.wav";
-            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite);
-            a.AudioWrite(fs);
-            ISEResultReader reader = new ISEResultReader(a.GetAnswer());
+            using (ISEServerAgent a = new ISEServerAgent())
+            {
+                a.Login("your appid");
+                a.TextPut("[content]\r\nIt was two weeks before the Spring Festival and the shopping centre was crowded with shoppers.\r\n");
+                string path = @"C:\Users\Administrator\Desktop\科大讯飞\bin\ise_en\en_sentence.wav";
+                FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite);
+                a.AudioWrite(fs);
+                ISEResultReader reader = new ISEResultReader(a.GetAnswer());
+            }
             Console.Read();
         }
     }
@@ -82,6 +83,7 @@ namespace iFLYTEK_demo
         }
     }
     public class ISEServerAgent
+        :IDisposable
     {
         public string SessionID = null;
         public int errorCode = (int)ErrorCode.MSP_SUCCESS;
@@ -182,6 +184,11 @@ namespace iFLYTEK_demo
             }
             return null;
         }
+        public void Dispose()
+        {
+            errorCode = ISEDLL.QISESessionEnd(SessionID, null);
+            errorCode = ISEDLL.MSPLogout();
+        }
     }
     public class UnmanagedManager
     {
@@ -235,6 +242,10 @@ namespace iFLYTEK_demo
         public static extern int QISEAudioWrite(string sessionID, IntPtr waveDate, uint waveLen, int audioStatus, ref int epStatus, ref int Status);
         [DllImport(@"msc.dll", CallingConvention = CallingConvention.Winapi)]
         public static extern IntPtr QISEGetResult(string sessionID, ref uint rsltLen, ref int rsltStatus, ref int errorCode);
+        [DllImport(@"msc.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern int QISESessionEnd(string sessionID, string hints);
+        [DllImport(@"msc.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern int MSPLogout();
         #endregion
     }
     public enum ErrorCode
