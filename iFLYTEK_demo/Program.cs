@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-
+using System.Xml;
 
 namespace iFLYTEK_demo
 {
@@ -22,8 +22,63 @@ namespace iFLYTEK_demo
             string path = @"C:\Users\Administrator\Desktop\科大讯飞\bin\ise_en\en_sentence.wav";
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite);
             a.AudioWrite(fs);
-            Console.WriteLine(a.GetAnswer());
+            ISEResultReader reader = new ISEResultReader(a.GetAnswer());
             Console.Read();
+        }
+    }
+    public class ISEResultReader
+    {
+        public const double PassScore = 3.0;
+        private XmlElement xeSentence;
+        public double TotalScore
+        {
+            get
+            {
+                return _totalScore;
+            }
+        }
+        public string Content
+        {
+            get
+            {
+                return _content;
+            }
+        }
+        public List<ISEWord> AnswerList;
+        private string _content = null;
+        private double _totalScore = 0;
+        public ISEResultReader(string resultxml)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            xmldoc.LoadXml(resultxml);
+            XmlElement xeresult = xmldoc.DocumentElement;
+            xeSentence = xeresult["read_sentence"]["rec_paper"]["read_chapter"]["sentence"];
+            var xmlattributes = xeSentence.Attributes;
+            _totalScore = Convert.ToDouble(xmlattributes["total_score"].Value.Replace("\"",""));
+            _content = xmlattributes["content"].Value.Replace("\"", "");
+            AnswerList = new List<ISEWord>();
+            foreach (XmlElement word in xeSentence)
+            {
+                var wordattributes = word.Attributes;
+                string content = wordattributes["content"].Value;
+                var atotalscore = wordattributes["total_score"];
+                if (content == "sil" || atotalscore == null)   
+                    continue;
+                double score = Convert.ToDouble(atotalscore.Value.Replace("\"", ""));
+                ISEWord wordnow = new ISEWord
+                {
+                    Content = content,
+                    Score = score,
+                    IsPass = (score >= PassScore)
+                };
+                AnswerList.Add(wordnow);
+            }
+        }
+        public struct ISEWord
+        {
+            public string Content;
+            public double Score;
+            public bool IsPass;
         }
     }
     public class ISEServerAgent
