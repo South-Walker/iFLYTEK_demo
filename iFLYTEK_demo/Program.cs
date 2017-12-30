@@ -153,8 +153,8 @@ namespace iFLYTEK_demo
             int audStat = (int)AudioSample.MSP_AUDIO_SAMPLE_CONTINUE;
             while (true)
             {
-                uint len = 6400;// 每次写入200ms音频(16k，16bit)：1帧音频20ms，10帧=200ms。16k采样率的16位音频，一帧的大小为640Byte
-                if (size <= 2 * textLen)
+                uint len = 3200;// 每次写入200ms音频(16k，16bit)：1帧音频20ms，10帧=200ms。16k采样率的16位音频，一帧的大小为640Byte
+                if (size <= 2 * len)
                 {
                     len = (uint)size;
                 }
