@@ -153,7 +153,7 @@ namespace iFLYTEK_demo
             int audStat = (int)AudioSample.MSP_AUDIO_SAMPLE_CONTINUE;
             while (true)
             {
-                uint len = 3200;// 每次写入200ms音频(16k，16bit)：1帧音频20ms，10帧=200ms。16k采样率的16位音频，一帧的大小为640Byte
+                uint len = 6400;// 每次写入200ms音频(16k，16bit)：1帧音频20ms，10帧=200ms。16k采样率的16位音频，一帧的大小为640Byte
                 if (size <= 2 * len)
                 {
                     len = (uint)size;
@@ -184,10 +184,16 @@ namespace iFLYTEK_demo
             }
             return null;
         }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!string.IsNullOrEmpty(SessionID))
+                errorCode = ISEDLL.QISESessionEnd(SessionID, null);
+            errorCode = ISEDLL.MSPLogout();
+        }
         public void Dispose()
         {
-            errorCode = ISEDLL.QISESessionEnd(SessionID, null);
-            errorCode = ISEDLL.MSPLogout();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
     public class UnmanagedManager
